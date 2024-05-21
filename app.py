@@ -6,41 +6,54 @@ st.title('Control de Temperatura y Humedad Huerta Urbana')
 image = Image.open('grafana2.jpg')
 st.image(image)
 
-uploaded_file_temp = st.file_uploader('Elige un archivo de temperatura', key='temp')
-uploaded_file_hum = st.file_uploader('Elige un archivo de humedad', key='hum')
+uploaded_file = st.file_uploader('Choose a file')
 
-def process_file(uploaded_file, variable, variable_name):
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
+if uploaded_file is not None:
+    df = pd.read_excel(uploaded_file, sheet_name=None)
+
+    # Filtrar las hojas de datos de temperatura y humedad si existen
+    df_temperatura = None
+    df_humedad = None
+    for sheet_name, sheet_df in df.items():
+        if 'temperatura ESP32' in sheet_df.columns:
+            df_temperatura = sheet_df.set_index('Time')
+        elif 'humedad ESP32' in sheet_df.columns:
+            df_humedad = sheet_df.set_index('Time')
+
+    if df_temperatura is not None:
+        st.subheader('Perfil gráfico de la variable medida (Temperatura).')
+        st.line_chart(df_temperatura)
         
-        # Verificar que las columnas esperadas existan
-        if 'Time' not in df.columns or variable not in df.columns:
-            st.error(f"El archivo debe contener las columnas 'Time' y '{variable}'")
-            return
+        st.subheader('Estadísticos básicos de los sensores de Temperatura.')
+        st.dataframe(df_temperatura["temperatura ESP32"].describe())
         
-        st.subheader(f'Perfil gráfico de la variable medida: {variable_name}.')
-        df = df.set_index('Time')
-        st.line_chart(df)
-        st.write(df)
-        st.subheader(f'Estadísticos básicos del sensor: {variable_name}.')
-        st.dataframe(df[variable].describe())
+        min_temp = st.slider('Selecciona valor mínimo del filtro de Temperatura', min_value=-10, max_value=45, value=23, key='temp_min')
+        filtrado_df_min_temp = df_temperatura.query(f"`temperatura ESP32` > {min_temp}")
+        st.subheader("Temperaturas superiores al valor configurado.")
+        st.write(filtrado_df_min_temp)
+        
+        max_temp = st.slider('Selecciona valor máximo del filtro de Temperatura', min_value=-10, max_value=45, value=23, key='temp_max')
+        filtrado_df_max_temp = filtrado_df_min_temp.query(f"`temperatura ESP32` < {max_temp}")
+        st.subheader("Temperaturas inferiores al valor configurado.")
+        st.write(filtrado_df_max_temp)
+        
+    if df_humedad is not None:
+        st.subheader('Perfil gráfico de la variable medida (Humedad).')
+        st.line_chart(df_humedad)
+        
+        st.subheader('Estadísticos básicos de los sensores de Humedad.')
+        st.dataframe(df_humedad["humedad ESP32"].describe())
+        
+        min_hum = st.slider('Selecciona valor mínimo del filtro de Humedad', min_value=0, max_value=100, value=50, key='hum_min')
+        filtrado_df_min_hum = df_humedad.query(f"`humedad ESP32` > {min_hum}")
+        st.subheader("Humedades superiores al valor configurado.")
+        st.write(filtrado_df_min_hum)
+        
+        max_hum = st.slider('Selecciona valor máximo del filtro de Humedad', min_value=0, max_value=100, value=50, key='hum_max')
+        filtrado_df_max_hum = filtrado_df_min_hum.query(f"`humedad ESP32` < {max_hum}")
+        st.subheader("Humedades inferiores al valor configurado.")
+        st.write(filtrado_df_max_hum)
+        
+else:
+    st.warning('Necesitas cargar un archivo excel.')
 
-        min_val = st.slider(f'Selecciona valor mínimo del filtro para {variable_name}', min_value=-10, max_value=100, value=23, key=f'min_{variable}')
-        filtrado_df_min = df.query(f"`{variable}` > {min_val}")
-        st.subheader(f"{variable_name.capitalize()} superiores al valor configurado.")
-        st.write('Dataframe Filtrado')
-        st.write(filtrado_df_min)
-
-        max_val = st.slider(f'Selecciona valor máximo del filtro para {variable_name}', min_value=-10, max_value=100, value=23, key=f'max_{variable}')
-        filtrado_df_max = df.query(f"`{variable}` < {max_val}")
-        st.subheader(f"{variable_name.capitalize()} inferiores al valor configurado.")
-        st.write('Dataframe Filtrado')
-        st.write(filtrado_df_max)
-    else:
-        st.warning(f'Necesitas cargar un archivo de {variable_name}.')
-
-if uploaded_file_temp:
-    process_file(uploaded_file_temp, 'temperatura ESP32', 'temperatura')
-
-if uploaded_file_hum:
-    process_file(uploaded_file_hum, 'humedad ESP32', 'humedad')
