@@ -2,30 +2,50 @@ import pandas as pd
 import streamlit as st
 from PIL import Image
 
-    cols = ["Time", "temperatura ESP32", "humedad ESP32"]
-    df1 = pd.read_csv(uploaded_file, usecols=cols)
-    
-    st.subheader('Perfil gráfico de la variable medida.')
-    df1 = df1.set_index('Time')
-    st.line_chart(df1)
-    
-    st.write(df1)
-    st.subheader('Estadísticos básicos de los sensores.')
-    # convertir esto en variable
-    st.dataframe(df1["temperatura ESP32"].describe())
-    
-    min_temp = st.slider('Selecciona valor mínimo del filtro ', min_value=-10, max_value=45, value=23, key=1)
-    min_hum = st.slider('Selecciona valor mínimo del filtro de humedad', min_value=0, max_value=100, value=50, key=2)
-    
-    # Filtrar el DataFrame utilizando query
-    filtrado_df_min_temp = df1.query(f"`temperatura ESP32` > {min_temp}")
-    filtrado_df_min_hum = df1.query(f"`humedad ESP32` > {min_hum}")
-    
-    # Mostrar el DataFrame filtrado
-    st.subheader("Temperaturas superiores al valor configurado.")
-    st.write('Dataframe Filtrado para Temperatura')
-    st.write(filtrado_df_min_temp)
-    
-    st.subheader("Humedad superior al valor configurado.")
-    st.write('Dataframe Filtrado para Humedad')
-    st.write(filtrado_df_min_hum)
+
+st.title('Control de Temperatura y Humedad Huerta Urbana')
+image = Image.open('grafana2.jpg')
+st.image(image)
+
+uploaded_file = st.file_uploader('Choose a file')
+
+import streamlit as st
+import pandas as pd
+
+# Función para cargar el archivo CSV y mostrar las estadísticas descriptivas
+def mostrar_estadisticas_descriptivas(df, columna):
+    st.write(df[columna].describe())
+
+    # Filtrar el DataFrame utilizando un slider para seleccionar el valor mínimo
+    min_valor = st.slider(f'Selecciona valor mínimo del filtro para {columna}', min_value=df[columna].min(), max_value=df[columna].max(), value=df[columna].min(), key=1)
+    filtrado_df_min = df.query(f"`{columna}` > {min_valor}")
+
+    # Mostrar el DataFrame filtrado para valores superiores al valor configurado
+    st.subheader(f"{columna.capitalize()} superiores al valor configurado.")
+    st.write('Dataframe Filtrado')
+    st.write(filtrado_df_min)
+
+    # Filtrar el DataFrame utilizando un slider para seleccionar el valor máximo
+    max_valor = st.slider(f'Selecciona valor máximo del filtro para {columna}', min_value=df[columna].min(), max_value=df[columna].max(), value=df[columna].max(), key=2)
+    filtrado_df_max = df.query(f"`{columna}` < {max_valor}")
+
+    # Mostrar el DataFrame filtrado para valores inferiores al valor configurado
+    st.subheader(f"{columna.capitalize()} inferiores al valor configurado.")
+    st.write('Dataframe Filtrado')
+    st.write(filtrado_df_max)
+
+# Cargar el archivo CSV
+uploaded_file = st.file_uploader("Cargar archivo CSV", type=["csv"])
+
+if uploaded_file is not None:
+    # Leer el archivo CSV
+    df = pd.read_csv(uploaded_file)
+
+    # Determinar si el archivo contiene datos de temperatura o de humedad
+    columnas = df.columns
+    if "temperatura ESP32" in columnas:
+        mostrar_estadisticas_descriptivas(df, "temperatura ESP32")
+    elif "humedad ESP32" in columnas:
+        mostrar_estadisticas_descriptivas(df, "humedad ESP32")
+    else:
+        st.write("El archivo no contiene columnas de temperatura ESP32 o humedad ESP32.")
