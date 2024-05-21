@@ -9,51 +9,43 @@ st.image(image)
 uploaded_file = st.file_uploader('Choose a file')
 
 if uploaded_file is not None:
-    df1 = pd.read_csv(uploaded_file)
-    
-    st.write("Contenido del archivo cargado:")
-    st.write(df1.head())
+    # Leer el archivo CSV en un DataFrame de Pandas
+    df = pd.read_csv(uploaded_file)
 
-    if 'Time' not in df1.columns:
-        st.error("El archivo CSV no contiene una columna llamada 'Time'. Por favor, verifica el archivo y vuelve a cargarlo.")
-    else:
-        df1['Time'] = pd.to_datetime(df1['Time'], errors='coerce')
-        df1 = df1.dropna(subset=['Time'])  # Eliminar filas con valores NaT en 'Time'
-        df1 = df1.set_index('Time')
-        
-        # Verificar si hay datos de temperatura o humedad
-        if "temperatura ESP32" in df1.columns:
-            columna = "temperatura ESP32"
-            min_valor_default = 23
-            max_valor_default = 23
-        elif "humedad ESP32" in df1.columns:
-            columna = "humedad ESP32"
-            min_valor_default = 50
-            max_valor_default = 50
-        else:
-            st.warning("El archivo no contiene columnas de temperatura ESP32 o humedad ESP32.")
-            st.stop()
+    # Verificar si hay una columna llamada "temperatura ESP32" y "humedad ESP32"
+    has_temperature = "temperatura ESP32" in df.columns
+    has_humidity = "humedad ESP32" in df.columns
 
+    if has_temperature or has_humidity:
         st.subheader('Perfil gráfico de la variable medida.')
-        st.line_chart(df1[columna])
+        df = df.set_index('Time')
+        st.line_chart(df)
 
-        st.write(df1)
+        st.write(df)
         st.subheader('Estadísticos básicos de los sensores.')
-        st.dataframe(df1[columna].describe())
 
-        min_valor = st.slider(f'Selecciona valor mínimo del filtro para {columna}', min_value=float(df1[columna].min()), max_value=float(df1[columna].max()), value=min_valor_default, key=1)
-        filtrado_df_min = df1.query(f"`{columna}` > {min_valor}")
+        if has_temperature:
+            # Filtrar temperatura
+            min_temp = st.slider('Selecciona valor mínimo del filtro de temperatura', min_value=-10, max_value=45, value=23, key=1)
+            max_temp = st.slider('Selecciona valor máximo del filtro de temperatura', min_value=-10, max_value=45, value=23, key=2)
 
-        st.subheader(f"{columna.capitalize()} superiores al valor configurado.")
-        st.write('Dataframe Filtrado')
-        st.write(filtrado_df_min)
+            filtrado_df_temp = df.query(f"`temperatura ESP32` > {min_temp} and `temperatura ESP32` < {max_temp}")
+            st.subheader("Temperaturas dentro del rango configurado.")
+            st.write('Dataframe Filtrado')
+            st.write(filtrado_df_temp.describe())
 
-        max_valor = st.slider(f'Selecciona valor máximo del filtro para {columna}', min_value=float(df1[columna].min()), max_value=float(df1[columna].max()), value=max_valor_default, key=2)
-        filtrado_df_max = df1.query(f"`{columna}` < {max_valor}")
+        if has_humidity:
+            # Filtrar humedad
+            min_humidity = st.slider('Selecciona valor mínimo del filtro de humedad', min_value=0, max_value=100, value=50, key=3)
+            max_humidity = st.slider('Selecciona valor máximo del filtro de humedad', min_value=0, max_value=100, value=50, key=4)
 
-        st.subheader(f"{columna.capitalize()} inferiores al valor configurado.")
-        st.write('Dataframe Filtrado')
-        st.write(filtrado_df_max)
+            filtrado_df_humidity = df.query(f"`humedad ESP32` > {min_humidity} and `humedad ESP32` < {max_humidity}")
+            st.subheader("Humedades dentro del rango configurado.")
+            st.write('Dataframe Filtrado')
+            st.write(filtrado_df_humidity.describe())
+
+    else:
+        st.warning('El archivo no contiene datos de temperatura ni de humedad.')
 
 else:
     st.warning('Necesitas cargar un archivo csv excel.')
