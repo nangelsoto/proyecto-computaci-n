@@ -3,8 +3,9 @@ import streamlit as st
 from PIL import Image
 
 st.title('Control de Temperatura y Humedad Huerta Urbana')
+image = Image.open('grafana2.jpg')
+st.image(image)
 
-# Cargar los archivos CSV
 uploaded_temp_file = st.file_uploader('Selecciona un archivo de temperatura (CSV)', type=['csv'])
 uploaded_hum_file = st.file_uploader('Selecciona un archivo de humedad (CSV)', type=['csv'])
 
