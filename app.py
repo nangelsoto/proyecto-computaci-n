@@ -3,60 +3,35 @@ import streamlit as st
 from PIL import Image
 
 st.title('Control de Temperatura y Humedad Huerta Urbana')
-image = Image.open('grafana2.jpg')
-st.image(image)
-columnas = ["temperatura ESP32", "humedad ESP32"]
 
-uploaded_file = st.file_uploader('Choose a file')
+# Cargar los archivos CSV
+uploaded_temp_file = st.file_uploader('Selecciona un archivo de temperatura (CSV)', type=['csv'])
+uploaded_hum_file = st.file_uploader('Selecciona un archivo de humedad (CSV)', type=['csv'])
 
-if uploaded_file is not None:
-    df1 = pd.read_csv(uploaded_file)
+if uploaded_temp_file is not None and uploaded_hum_file is not None:
+    # Leer los archivos CSV
+    df_temp = pd.read_csv(uploaded_temp_file, parse_dates=['Time'], index_col='Time')
+    df_hum = pd.read_csv(uploaded_hum_file, parse_dates=['Time'], index_col='Time')
 
-    st.subheader('Perfil gráfico de la variable medida.')
-    df1 = df1.set_index('Time')
-    st.line_chart(df1)
+    # Convertir la columna de tiempo a formato uniforme
+    df_temp.index = df_temp.index.strftime('%Y-%m-%d %H:%M:%S')
+    df_hum.index = df_hum.index.strftime('%Y-%m-%d %H:%M:%S')
 
-    st.write(df1)
-    st.subheader('Estadísticos básicos de los sensores.')
+    # Visualización de temperatura
+    st.subheader('Perfil gráfico de la temperatura')
+    st.line_chart(df_temp['temperatura ESP32'])
 
-    if columnas == "temperatura ESP32":
-        # Convertir esto en variable
-        st.dataframe(df1["temperatura ESP32"].describe())
+    # Estadísticas básicas de temperatura
+    st.subheader('Estadísticos básicos de la temperatura')
+    st.dataframe(df_temp['temperatura ESP32'].describe())
 
-        min_temp = st.slider('Selecciona valor mínimo del filtro', min_value=-10, max_value=45, value=23, key=1)
-        # Filtrar el DataFrame utilizando query
-        filtrado_df_min = df1.query(f"`temperatura ESP32` > {min_temp}")
-        # Mostrar el DataFrame filtrado
-        st.subheader("Temperaturas superiores al valor configurado.")
-        st.write('Dataframe Filtrado')
-        st.write(filtrado_df_min)
+    # Visualización de humedad
+    st.subheader('Perfil gráfico de la humedad')
+    st.line_chart(df_hum['humedad ESP32'])
 
-        max_temp = st.slider('Selecciona valor máximo del filtro', min_value=-10, max_value=45, value=23, key=2)
-        # Filtrar el DataFrame utilizando query
-        filtrado_df_max = df1.query(f"`temperatura ESP32` < {max_temp}")
-        # Mostrar el DataFrame filtrado
-        st.subheader("Temperaturas Inferiores al valor configurado.")
-        st.write('Dataframe Filtrado')
-        st.write(filtrado_df_max)
-
-    elif columnas == "humedad ESP32":
-        st.dataframe(df1["humedad ESP32"].describe())
-
-        min_hum = st.slider('Selecciona valor mínimo del filtro', min_value=-10, max_value=45, value=23, key=1)
-        # Filtrar el DataFrame utilizando query
-        filtrado_df_min = df1.query(f"`humedad ESP32` > {min_hum}")
-        # Mostrar el DataFrame filtrado
-        st.subheader("Humedades superiores al valor configurado.")
-        st.write('Dataframe Filtrado')
-        st.write(filtrado_df_min)
-
-        max_hum = st.slider('Selecciona valor máximo del filtro', min_value=-10, max_value=45, value=23, key=2)
-        # Filtrar el DataFrame utilizando query
-        filtrado_df_max = df1.query(f"`humedad ESP32` < {max_hum}")
-        # Mostrar el DataFrame filtrado
-        st.subheader("Humedades Inferiores al valor configurado.")
-        st.write('Dataframe Filtrado')
-        st.write(filtrado_df_max)
+    # Estadísticas básicas de humedad
+    st.subheader('Estadísticos básicos de la humedad')
+    st.dataframe(df_hum['humedad ESP32'].describe())
 
 else:
-    st.warning('Necesitas cargar un archivo CSV de Excel.')
+    st.warning('Necesitas cargar ambos archivos CSV (temperatura y humedad).')
