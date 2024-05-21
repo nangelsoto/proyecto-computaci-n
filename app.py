@@ -5,47 +5,58 @@ from PIL import Image
 st.title('Control de Temperatura y Humedad Huerta Urbana')
 image = Image.open('grafana2.jpg')
 st.image(image)
+columnas = ["temperatura ESP32", "humedad ESP32"]
 
 uploaded_file = st.file_uploader('Choose a file')
 
 if uploaded_file is not None:
-    # Leer el archivo CSV en un DataFrame de Pandas
-    df = pd.read_csv(uploaded_file)
+    df1 = pd.read_csv(uploaded_file)
 
-    # Verificar si hay una columna llamada "temperatura ESP32" y "humedad ESP32"
-    has_temperature = "temperatura ESP32" in df.columns
-    has_humidity = "humedad ESP32" in df.columns
+    st.subheader('Perfil gráfico de la variable medida.')
+    df1 = df1.set_index('Time')
+    st.line_chart(df1)
 
-    if has_temperature or has_humidity:
-        st.subheader('Perfil gráfico de la variable medida.')
-        df = df.set_index('Time')
-        st.line_chart(df)
+    st.write(df1)
+    st.subheader('Estadísticos básicos de los sensores.')
 
-        st.write(df)
-        st.subheader('Estadísticos básicos de los sensores.')
+    if columnas == "temperatura ESP32":
+        # Convertir esto en variable
+        st.dataframe(df1["temperatura ESP32"].describe())
 
-        if has_temperature:
-            # Filtrar temperatura
-            min_temp = st.slider('Selecciona valor mínimo del filtro de temperatura', min_value=-10, max_value=45, value=23, key=1)
-            max_temp = st.slider('Selecciona valor máximo del filtro de temperatura', min_value=-10, max_value=45, value=23, key=2)
+        min_temp = st.slider('Selecciona valor mínimo del filtro', min_value=-10, max_value=45, value=23, key=1)
+        # Filtrar el DataFrame utilizando query
+        filtrado_df_min = df1.query(f"`temperatura ESP32` > {min_temp}")
+        # Mostrar el DataFrame filtrado
+        st.subheader("Temperaturas superiores al valor configurado.")
+        st.write('Dataframe Filtrado')
+        st.write(filtrado_df_min)
 
-            filtrado_df_temp = df.query(f"`temperatura ESP32` > {min_temp} and `temperatura ESP32` < {max_temp}")
-            st.subheader("Temperaturas dentro del rango configurado.")
-            st.write('Dataframe Filtrado')
-            st.write(filtrado_df_temp.describe())
+        max_temp = st.slider('Selecciona valor máximo del filtro', min_value=-10, max_value=45, value=23, key=2)
+        # Filtrar el DataFrame utilizando query
+        filtrado_df_max = df1.query(f"`temperatura ESP32` < {max_temp}")
+        # Mostrar el DataFrame filtrado
+        st.subheader("Temperaturas Inferiores al valor configurado.")
+        st.write('Dataframe Filtrado')
+        st.write(filtrado_df_max)
 
-        if has_humidity:
-            # Filtrar humedad
-            min_humidity = st.slider('Selecciona valor mínimo del filtro de humedad', min_value=0, max_value=100, value=50, key=3)
-            max_humidity = st.slider('Selecciona valor máximo del filtro de humedad', min_value=0, max_value=100, value=50, key=4)
+    elif columnas == "humedad ESP32":
+        st.dataframe(df1["humedad ESP32"].describe())
 
-            filtrado_df_humidity = df.query(f"`humedad ESP32` > {min_humidity} and `humedad ESP32` < {max_humidity}")
-            st.subheader("Humedades dentro del rango configurado.")
-            st.write('Dataframe Filtrado')
-            st.write(filtrado_df_humidity.describe())
+        min_hum = st.slider('Selecciona valor mínimo del filtro', min_value=-10, max_value=45, value=23, key=1)
+        # Filtrar el DataFrame utilizando query
+        filtrado_df_min = df1.query(f"`humedad ESP32` > {min_hum}")
+        # Mostrar el DataFrame filtrado
+        st.subheader("Humedades superiores al valor configurado.")
+        st.write('Dataframe Filtrado')
+        st.write(filtrado_df_min)
 
-    else:
-        st.warning('El archivo no contiene datos de temperatura ni de humedad.')
+        max_hum = st.slider('Selecciona valor máximo del filtro', min_value=-10, max_value=45, value=23, key=2)
+        # Filtrar el DataFrame utilizando query
+        filtrado_df_max = df1.query(f"`humedad ESP32` < {max_hum}")
+        # Mostrar el DataFrame filtrado
+        st.subheader("Humedades Inferiores al valor configurado.")
+        st.write('Dataframe Filtrado')
+        st.write(filtrado_df_max)
 
 else:
-    st.warning('Necesitas cargar un archivo csv excel.')
+    st.warning('Necesitas cargar un archivo CSV de Excel.')
