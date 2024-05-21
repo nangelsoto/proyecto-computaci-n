@@ -15,7 +15,7 @@ if uploaded_file is not None:
     # Crear un selector para que el usuario elija entre 'temperatura ESP32' y 'humedad ESP32'
     columna = st.selectbox(
         'Seleccione la variable a visualizar',
-        ('temperatura ESP32', 'humedad ESP32')
+        ('temperatura ESP32', 'Time,"humedad ESP32"')
     )
 
     st.subheader('Perfil gráfico de la variable medida.')
