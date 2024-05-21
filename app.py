@@ -37,31 +37,39 @@ if uploaded_file is not None:
     # Leer el archivo CSV
     df = pd.read_csv(uploaded_file)
 
-    # Intentar convertir la columna 'Time' a formato datetime
-    df['Time'] = pd.to_datetime(df['Time'], errors='coerce')
-    df = df.dropna(subset=['Time'])  # Eliminar filas con valores NaT en 'Time'
-    
-    # Establecer la columna 'Time' como índice
-    df = df.set_index('Time')
+    # Mostrar las primeras filas para verificar la carga correcta del archivo
+    st.write("Contenido del archivo cargado:")
+    st.write(df.head())
 
-    # Verificar si hay datos de temperatura o humedad
-    if "temperatura ESP32" in df.columns:
-        columna = "temperatura ESP32"
-        min_valor_default = 23  # Valor por defecto para el filtro de temperatura
-        max_valor_default = 23
-    elif "humedad ESP32" in df.columns:
-        columna = "humedad ESP32"
-        min_valor_default = 50  # Valor por defecto para el filtro de humedad
-        max_valor_default = 50
+    # Verificar si la columna 'Time' está en el DataFrame
+    if 'Time' not in df.columns:
+        st.error("El archivo CSV no contiene una columna llamada 'Time'. Por favor, verifica el archivo y vuelve a cargarlo.")
     else:
-        st.warning("El archivo no contiene columnas de temperatura ESP32 o humedad ESP32.")
-        st.stop()
+        # Intentar convertir la columna 'Time' a formato datetime
+        df['Time'] = pd.to_datetime(df['Time'], errors='coerce')
+        df = df.dropna(subset=['Time'])  # Eliminar filas con valores NaT en 'Time'
+        
+        # Establecer la columna 'Time' como índice
+        df = df.set_index('Time')
 
-    st.subheader('Perfil gráfico de la variable medida.')
-    st.line_chart(df[columna])
+        # Verificar si hay datos de temperatura o humedad
+        if "temperatura ESP32" in df.columns:
+            columna = "temperatura ESP32"
+            min_valor_default = 23  # Valor por defecto para el filtro de temperatura
+            max_valor_default = 23
+        elif "humedad ESP32" in df.columns:
+            columna = "humedad ESP32"
+            min_valor_default = 50  # Valor por defecto para el filtro de humedad
+            max_valor_default = 50
+        else:
+            st.warning("El archivo no contiene columnas de temperatura ESP32 o humedad ESP32.")
+            st.stop()
 
-    st.write(df)
-    mostrar_estadisticos_y_filtrado(df, columna, min_valor_default, max_valor_default)
+        st.subheader('Perfil gráfico de la variable medida.')
+        st.line_chart(df[columna])
+
+        st.write(df)
+        mostrar_estadisticos_y_filtrado(df, columna, min_valor_default, max_valor_default)
 
 else:
     st.warning('Necesitas cargar un archivo csv excel.')
