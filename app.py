@@ -19,21 +19,21 @@ if uploaded_file is not None:
    st.write(df1)
    st.subheader('Estadísticos básicos de los sensores.')
    #convertir esto en variable
-   st.dataframe(df1["temperatura ESP32"].describe())
+   st.dataframe(df1["humedad ESP32"].describe())
    
-   min_temp = st.slider('Selecciona valor mínimo del filtro ', min_value=-10, max_value=45, value=23, key=1)
+   min_hum = st.slider('Selecciona valor mínimo del filtro ', min_value=-10, max_value=45, value=23, key=1)
    # Filtrar el DataFrame utilizando query
-   filtrado_df_min = df1.query(f"`temperatura ESP32` > {min_temp}")
+   filtrado_df_min = df1.query(f"`humedad ESP32` > {min_hum}")
    # Mostrar el DataFrame filtrado
-   st.subheader("Temperaturas superiores al valor configurado.")
+   st.subheader("Humedades superiores al valor configurado.")
    st.write('Dataframe Filtrado')
    st.write(filtrado_df_min)
    
-   max_temp = st.slider('Selecciona valor máximo del filtro ', min_value=-10, max_value=45, value=23, key=2)
+   max_hum = st.slider('Selecciona valor máximo del filtro ', min_value=-10, max_value=45, value=23, key=2)
    # Filtrar el DataFrame utilizando query
-   filtrado_df_max = df1.query(f"`temperatura ESP32` < {max_temp}")
+   filtrado_df_max = df1.query(f"`humedad ESP32` < {max_hum}")
    # Mostrar el DataFrame filtrado
-   st.subheader("Temperaturas Inferiores al valor configurado.")
+   st.subheader("Humedades Inferiores al valor configurado.")
    st.write('Dataframe Filtrado')
    st.write(filtrado_df_max)
    
