@@ -3,7 +3,7 @@ import streamlit as st
 from PIL import Image
 
 
-st.title('Control de Temperatura y Humedad Huerta Urbana')
+st.title('Control Humedad y Temperatura Huerta Urbana')
 image = Image.open('grafana2.jpg')
 st.image(image)
 
@@ -18,11 +18,11 @@ if uploaded_file is not None:
    
    st.write(df1)
    st.subheader('Estadísticos básicos de los sensores.')
-   st.dataframe(df1["humedad ESP32"].describe())
+   st.dataframe(df1["temperatura ESP32"].describe())
    
    min_temp = st.slider('Selecciona valor mínimo del filtro ', min_value=-10, max_value=45, value=23, key=1)
    # Filtrar el DataFrame utilizando query
-   filtrado_df_min = df1.query(f"`humedad ESP32` > {min_hum}")
+   filtrado_df_min = df1.query(f"`temperatura ESP32` > {min_temp}")
    # Mostrar el DataFrame filtrado
    st.subheader("Temperaturas superiores al valor configurado.")
    st.write('Dataframe Filtrado')
@@ -30,7 +30,7 @@ if uploaded_file is not None:
    
    max_temp = st.slider('Selecciona valor máximo del filtro ', min_value=-10, max_value=45, value=23, key=2)
    # Filtrar el DataFrame utilizando query
-   filtrado_df_max = df1.query(f"`humedad ESP32` < {max_hum}")
+   filtrado_df_max = df1.query(f"`temperatura ESP32` < {max_temp}")
    # Mostrar el DataFrame filtrado
    st.subheader("Temperaturas Inferiores al valor configurado.")
    st.write('Dataframe Filtrado')
