@@ -43,7 +43,10 @@ if uploaded_file is not None:
     # Alerta si el valor máximo es 45
     if max_temp == 45:
         st.write('<p style="color:red; font-size: 20px;">Alerta: valor máximo seleccionado!</p>', unsafe_allow_html=True)
-        st.audio('alerta.mp3', format='audio/mp3')
+        # Ruta al archivo de audio
+        audio_file = open('alerta.mp3', 'rb')
+        audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format='audio/mp3')
 
 else:
     st.warning('Necesitas cargar un archivo csv excel.')
