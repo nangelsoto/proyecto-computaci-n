@@ -35,18 +35,19 @@ if uploaded_file is not None:
     max_temp = st.slider('Selecciona valor máximo del filtro ', min_value=-10, max_value=45, value=23, key=2)
     # Filtrar el DataFrame utilizando query
     filtrado_df_max = df1.query(f"`temperatura ESP32` < {max_temp}")
-    # Mostrar el DataFrame filtrado
-    st.subheader("Temperaturas Inferiores al valor configurado.")
-    st.write('Dataframe Filtrado')
-    st.write(filtrado_df_max)
-
-    # Alerta si el valor máximo es 45
+        # Alerta si el valor máximo es 45
     if max_temp == 45:
         st.write('<p style="color:red; font-size: 20px;">Alerta: valor máximo seleccionado!</p>', unsafe_allow_html=True)
         # Ruta al archivo de audio
         audio_file = open('alerta.mp3', 'rb')
         audio_bytes = audio_file.read()
         st.audio(audio_bytes, format='audio/mp3')
+    # Mostrar el DataFrame filtrado
+    st.subheader("Temperaturas Inferiores al valor configurado.")
+    st.write('Dataframe Filtrado')
+    st.write(filtrado_df_max)
+
+
 
 else:
     st.warning('Necesitas cargar un archivo csv excel.')
