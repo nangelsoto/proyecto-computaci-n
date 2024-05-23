@@ -26,6 +26,18 @@ if uploaded_file is not None:
     min_temp = st.slider('Selecciona valor mínimo del filtro ', min_value=-10, max_value=45, value=23, key=1)
     # Filtrar el DataFrame utilizando query
     filtrado_df_min = df1.query(f"`temperatura ESP32` > {min_temp}")
+          # Alerta si el valor mímino es 10
+    if min_temp == -10:
+        st.write('<p style="color:red; font-size: 20px;">Alerta: valor mínimo seleccionado!</p>', unsafe_allow_html=True)
+        # Ruta al archivo de audio
+        audio_file = open('alarma.mp3', 'rb')
+        audio_bytes = audio_file.read()
+        st.audio(audio_bytes, format='audio/mp3')
+    # Mostrar el DataFrame filtrado
+    st.subheader("Temperaturas Inferiores al valor configurado.")
+    st.write('Dataframe Filtrado')
+    st.write(filtrado_df_max)
+
     # Mostrar el DataFrame filtrado
     st.subheader("Temperaturas superiores al valor configurado.")
     st.write('Dataframe Filtrado')
