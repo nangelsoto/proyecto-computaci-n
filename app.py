@@ -28,7 +28,7 @@ if uploaded_file is not None:
     filtrado_df_min = df1.query(f"`temperatura ESP32` > {min_temp}")
     # Alerta si el valor máximo es 45
     if min_temp == -10:
-        st.write('<p style="color:red; font-size: 20px;">Alerta: valor máximo seleccionado!</p>', unsafe_allow_html=True)
+        st.write('<p style="color:red; font-size: 20px;">Alerta: valor mínimo seleccionado!</p>', unsafe_allow_html=True)
         # Ruta al archivo de audio
         audio_file = open('alarma.mp3', 'rb')
         audio_bytes = audio_file.read()
