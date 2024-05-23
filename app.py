@@ -30,7 +30,7 @@ if uploaded_file is not None:
     if min_temp == -10:
         st.write('<p style="color:red; font-size: 20px;">Alerta: valor máximo seleccionado!</p>', unsafe_allow_html=True)
         # Ruta al archivo de audio
-        audio_file = open('alarm.mp3', 'rb')
+        audio_file = open('alarma.mp3', 'rb')
         audio_bytes = audio_file.read()
         st.audio(audio_bytes, format='audio/mp3')
     # Mostrar el DataFrame filtrado
