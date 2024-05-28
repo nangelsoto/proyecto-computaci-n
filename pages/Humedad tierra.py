@@ -41,7 +41,7 @@ if uploaded_file is not None:
     # Slider para el valor máximo del filtro
     max_humti = st.slider('Selecciona valor máximo del filtro ', min_value=-10, max_value=45, value=23, key=2)
     # Filtrar el DataFrame utilizando query
-    filtrado_df_max = df1.query(f"`humedadtierra ESP32` < {max_hum}")
+    filtrado_df_max = df1.query(f"`humedadtierra ESP32` < {max_humti}")
         # Alerta si el valor máximo es 45
     if max_humti == 45:
         st.write('<p style="color:red; font-size: 20px;">Alerta: valor máximo seleccionado!</p>', unsafe_allow_html=True)
