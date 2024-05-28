@@ -27,7 +27,7 @@ if uploaded_file is not None:
     # Filtrar el DataFrame utilizando query
     filtrado_df_min = df1.query(f"`humedad ESP32` > {min_hum}")
     # Alerta si el valor máximo es 45
-    if min_temp == 10:
+    if min_hum == -10:
         st.write('<p style="color:red; font-size: 20px;">Alerta: valor mínimo seleccionado!</p>', unsafe_allow_html=True)
         # Ruta al archivo de audio
         audio_file = open('alarma.mp3', 'rb')
@@ -43,7 +43,7 @@ if uploaded_file is not None:
     # Filtrar el DataFrame utilizando query
     filtrado_df_max = df1.query(f"`humedad ESP32` < {max_hum}")
         # Alerta si el valor máximo es 45
-    if max_temp == 45:
+    if max_hum == 45:
         st.write('<p style="color:red; font-size: 20px;">Alerta: valor máximo seleccionado!</p>', unsafe_allow_html=True)
         # Ruta al archivo de audio
         audio_file = open('alerta.mp3', 'rb')
