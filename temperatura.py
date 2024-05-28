@@ -23,7 +23,7 @@ if uploaded_file is not None:
     st.dataframe(df1["temperatura ESP32"].describe())
 
     # Slider para el valor mínimo del filtro
-    min_temp = st.slider('Selecciona valor mínimo del filtro ', min_value=-10, max_value=45, value=23, key=1)
+    min_temp = st.slider('Selecciona valor mínimo del filtroo ', min_value=-10, max_value=45, value=23, key=1)
     # Filtrar el DataFrame utilizando query
     filtrado_df_min = df1.query(f"`temperatura ESP32` > {min_temp}")
     # Alerta si el valor máximo es 45
