@@ -25,7 +25,7 @@ if uploaded_file is not None:
     # Slider para el valor mínimo del filtro
     min_humti = st.slider('Selecciona valor mínimo del filtro ', min_value=-10, max_value=45, value=23, key=1)
     # Filtrar el DataFrame utilizando query
-    filtrado_df_min = df1.query(f"`humedadtierra ESP32` > {min_hum}")
+    filtrado_df_min = df1.query(f"`humedadtierra ESP32` > {min_humti}")
     # Alerta si el valor máximo es 45
     if min_humti == -10:
         st.write('<p style="color:red; font-size: 20px;">Alerta: valor mínimo seleccionado!</p>', unsafe_allow_html=True)
