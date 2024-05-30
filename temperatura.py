@@ -8,7 +8,7 @@ image = Image.open('grafana2.jpeg')
 st.image(image)
 
 # Cargador de archivos
-uploaded_file = st.file_uploader('Choose a file')
+uploaded_file = st.file_uploader('Ingresa los datos de temperatura')
 
 if uploaded_file is not None:
     df1 = pd.read_csv(uploaded_file)
