@@ -3,12 +3,12 @@ import streamlit as st
 from PIL import Image
 
 # Título de la aplicación
-st.title('Control Humedad y Temperatura Huerta Urbana')
-image = Image.open('grafana2.jpeg')
+st.title('Humedad')
+image = Image.open('humedad.jpg')
 st.image(image)
 
 # Cargador de archivos
-uploaded_file = st.file_uploader('Choose a file')
+uploaded_file = st.file_uploader('Ingresa los datos de humedad')
 
 if uploaded_file is not None:
     df1 = pd.read_csv(uploaded_file)
