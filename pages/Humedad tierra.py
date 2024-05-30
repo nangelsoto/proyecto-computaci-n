@@ -3,12 +3,12 @@ import streamlit as st
 from PIL import Image
 
 # Título de la aplicación
-st.title('Humedad de la Tierra)
+st.title('Humedad de la Tierra')
 image = Image.open('tierra.jpeg')
 st.image(image)
 
 # Cargador de archivos
-uploaded_file = st.file_uploader('Choose a file')
+uploaded_file = st.file_uploader('Ingresa los datos de la tierra')
 
 if uploaded_file is not None:
     df1 = pd.read_csv(uploaded_file)
