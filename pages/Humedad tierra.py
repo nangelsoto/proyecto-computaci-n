@@ -3,8 +3,8 @@ import streamlit as st
 from PIL import Image
 
 # Título de la aplicación
-st.title('Control Humedad y Temperatura Huerta Urbana')
-image = Image.open('grafana2.jpeg')
+st.title('Humedad de la Tierra)
+image = Image.open('tierra.jpeg')
 st.image(image)
 
 # Cargador de archivos
